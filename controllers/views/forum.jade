@@ -1,0 +1,87 @@
+html 
+    head 
+        title Forum 
+        link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css")
+        script(src="https://code.jquery.com/jquery-3.2.1.slim.min.js")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js")
+        script(src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js") 
+
+        script.
+
+            //- console.log(token)
+            function comment(ele_post,token){
+
+                var com_data = document.getElementById('com_data').value
+                console.log(document.getElementById('com_data'))
+                console.log(com_data)
+
+                var xhttp = new XMLHttpRequest()
+                xhttp.open('POST','http://localhost:5000/comment')
+                xhttp.setRequestHeader('content-type','application/json')
+                xhttp.setRequestHeader('x-access-token',token)
+                xhttp.send(JSON.stringify({
+                    'pname':ele_post.children[0].children[0].innerHTML,
+                    'com_data': com_data
+                }))
+                xhttp.onreadystatechange=function(){
+                    console.log(xhttp.responseText)
+                }
+                
+            }
+            function createPost(token){
+                var pname = document.getElementById('pname').value
+                var topic = document.getElementById('topic').value
+                var pcon = document.getElementById('pcon').value
+
+                var xhttp = new XMLHttpRequest()
+                xhttp.open('POST','http://localhost:5000/newpost')
+                xhttp.setRequestHeader('content-type','application/json')
+                console.log(token)
+                xhttp.setRequestHeader('x-access-token',token)
+                xhttp.send(JSON.stringify({
+                    'pname':pname,
+                    'topic':topic,
+                    'pcon':pcon
+                }))
+                xhttp.onreadystatechange=()=>{
+                    if(xhttp.readyState===XMLHttpRequest.DONE && xhttp.status===200){
+                        console.log(xhttp.responseText)
+                    }
+                }
+            }
+    body 
+        div.container 
+            //- h1=token
+            //- h1=postrec
+            div.jumbotron 
+                h1 Discussion Forum
+            form.form-group(action="/newpost" method='post')
+                p Enter Post name: 
+                input.form-control(type="text" name='pname' id='pname')
+                p Enter Post topic: 
+                input.form-control(type="text" name='topic' id='topic')
+                p Enter Post content: 
+                input.form-control(type='text' name="pcon" id= 'pcon')
+                input(type="text" value=token name='token' style="visibility:hidden")
+                br
+                input.btn.btn-info(type="button" value='Create' onclick='createPost(this.previousSibling.previousSibling.value)')
+
+            each p in JSON.parse(postrec) 
+                div.card(style='border:solid')
+                    div.card-header
+                        h1=p.pname 
+                    div.card-body
+                        p=p.topic 
+                        p=p.pcon 
+                        h5 Comments
+                        each c in p.comments 
+                            span=c
+                            br
+                        form.form-group(action="/comment" method='post')
+                            p New Comment:
+                            input.form-control(type="text" name='com_data' id ='com_data')
+                            input(type="text" value=token name='token' style='visibility:hidden')
+                            br
+                            input.btn.btn-primary(type="button" value='Comment' onclick='comment(this.parentNode.parentNode.parentNode,this.previousSibling.previousSibling.value)') 
+            
+            

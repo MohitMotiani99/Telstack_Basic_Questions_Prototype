@@ -1,0 +1,77 @@
+html 
+    head
+
+        link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css")
+        script(src="https://code.jquery.com/jquery-3.2.1.slim.min.js")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js")
+        script(src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js") 
+
+        script.
+            function getforum(postrec,token){
+                var xhttp = new XMLHttpRequest()
+                xhttp.open('POST','http://localhost:5000/forump')
+                xhttp.setRequestHeader('Content-Type','application/json')
+                xhttp.send(JSON.stringify({
+                    'token':token,
+                    'postrec':postrec
+                }))
+                xhttp.onreadystatechange=()=>{
+                    if(xhttp.readyState=== XMLHttpRequest.DONE && xhttp.status===200){
+                        console.log(xhttp.responseText)
+                        
+                    }
+                }                        
+
+            } 
+            function allposts(token){
+                var xhttp = new XMLHttpRequest()
+                xhttp.open('POST','http://localhost:5000/allposts')
+                xhttp.setRequestHeader('Content-Type','application/json')
+                xhttp.send(JSON.stringify({
+                    'token':token
+                }))
+                xhttp.onreadystatechange=()=>{
+                    if(xhttp.readyState=== XMLHttpRequest.DONE && xhttp.status===200){
+                        console.log(xhttp.responseText)
+
+                    }
+                }                        
+
+            }
+            function login(){
+                console.log('Reached Login ajax from jade')
+                var username = document.getElementById('username').value
+                var password = document.getElementById('password').value
+
+                console.log(username+password)
+                var xhttp = new XMLHttpRequest()
+                 xhttp.onreadystatechange=function(){
+                     if(xhttp.readyState === XMLHttpRequest.DONE && xhttp.status === 200){
+                        console.log(xhttp.responseText)
+                         var token =xhttp.responseText
+                         allposts(token)
+                    }
+                    
+                }
+                xhttp.open('POST','http://localhost:5000/login')
+                xhttp.setRequestHeader('Content-Type','application/json')
+                xhttp.send(JSON.stringify({
+                        "username":username,
+                        "password":password
+                    })
+                )
+            }
+    body
+        div.container 
+            div.jumbotron 
+                h1 Welcome to Login Portal 
+            form.form-group(action="/login" method='POST')
+                h1 Enter username: 
+                input.form-control(type="text" name='username' id='username')
+                h1 Enter password: 
+                input.form-control(type="password" name='password' id='password')
+                //- input(type="submit" value='login') 
+                //input(type="button" value='login' onclick='login()') 
+                br
+                br
+                input.btn.btn-primary(type="submit" value='login') 
